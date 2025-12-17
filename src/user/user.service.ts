@@ -1,15 +1,18 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { UserRepository } from '@/user/user.repository';
+import { Like } from 'typeorm';
+import { CreateUserDto, UserDto, UserQueryDto } from '@/dto/user.dto';
 
 @Injectable()
 export class UserService {
   constructor(private readonly repository: UserRepository) {}
 
-  async getUsers() {
-    return await this.repository.find();
+  async getUsers(query: UserQueryDto) {
+    const users = await this.repository.findBy({ name: Like(`%${query.name}%`) });
+    return users.map<UserDto>((v) => ({ id: v.id, name: v.name }));
   }
 
-  async createUser(body) {
+  async createUser(body: CreateUserDto) {
     const dup = await this.repository.findOneBy({ id: body.id });
     if (dup) {
       throw new BadRequestException('ID 중복');
@@ -27,5 +30,3 @@ export class UserService {
     return await this.repository.save(newUser);
   }
 }
-
-//request -> controller -> service -> repository -> db -> repository -> service -> controller -> response
