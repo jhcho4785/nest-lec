@@ -3,6 +3,7 @@ import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { User } from '@/entities/user.entity';
+import { Customer } from '@/entities/customer.entity';
 
 @Injectable()
 export class TypeormConfigService implements TypeOrmOptionsFactory {
@@ -22,7 +23,7 @@ export class TypeormConfigService implements TypeOrmOptionsFactory {
       namingStrategy: new SnakeNamingStrategy(), //camel -> snake
       synchronize: false,
       poolSize: 10,
-      entities: [User],
+      entities: [User, Customer],
     };
   }
 }

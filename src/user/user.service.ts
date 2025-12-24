@@ -1,14 +1,14 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { UserRepository } from '@/user/user.repository';
 import { Like } from 'typeorm';
-import { CreateUserDto, UserDto, UserQueryDto } from '@/dto/user.dto';
+import { CreateUserDto, UpdateUserDto, UserDto, UserQueryDto } from '@/dto/user.dto';
 
 @Injectable()
 export class UserService {
   constructor(private readonly repository: UserRepository) {}
 
   async getUsers(query: UserQueryDto) {
-    const users = await this.repository.findBy({ name: Like(`%${query.name}%`) });
+    const users = await this.repository.find({ where: { name: query.name ? Like(`%${query.name}%`) : undefined } });
     return users.map<UserDto>((v) => ({ id: v.id, name: v.name }));
   }
 
@@ -21,7 +21,7 @@ export class UserService {
     return await this.repository.save(user);
   }
 
-  async updateUser(id: string, body) {
+  async updateUser(id: string, body: UpdateUserDto) {
     const user = await this.repository.findOneBy({ id });
     if (!user) {
       throw new NotFoundException('User Not Found');

@@ -1,7 +1,8 @@
-import { Column, DeleteDateColumn, Entity, PrimaryColumn } from 'typeorm';
+import { Column, DeleteDateColumn, Entity, OneToMany, PrimaryColumn } from 'typeorm';
+import { Customer } from '@/entities/customer.entity';
 
 // 테이블과 1:1 관계
-@Entity()
+@Entity({ comment: '사용자 정보' })
 export class User {
   @PrimaryColumn('varchar', { length: 30 })
   id: string; // PK id varchar(30)
@@ -14,8 +15,7 @@ export class User {
 
   @DeleteDateColumn({ type: 'timestamp' })
   deletedAt?: Date;
-}
 
-// UserAuth -> Pascal (class, type)
-// var, func -> camel
-// snake -> db
+  @OneToMany(() => Customer, (customer) => customer.CreateUser)
+  Customers: Customer[];
+}

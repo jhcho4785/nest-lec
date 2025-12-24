@@ -9,6 +9,7 @@ import { utilities, WinstonModule } from 'nest-winston';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeormConfigService } from '@/config/typeorm.config.service';
 import { UserModule } from './user/user.module';
+import { CustomerModule } from './customer/customer.module';
 
 function getWinstonTransports() {
   const transports: Transport[] = [
@@ -47,6 +48,7 @@ function getWinstonTransports() {
     }),
     TypeOrmModule.forRootAsync({ useClass: TypeormConfigService }),
     UserModule,
+    CustomerModule,
   ],
   controllers: [AppController],
   providers: [AppService, ConfigService],
