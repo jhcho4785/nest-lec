@@ -21,12 +21,15 @@ export class UserService {
     return await this.repository.save(user);
   }
 
-  async updateUser(id: string, body: UpdateUserDto) {
+  async updateUser(id: string, body: UpdateUserDto): Promise<UserDto> {
     const user = await this.repository.findOneBy({ id });
     if (!user) {
       throw new NotFoundException('User Not Found');
     }
-    const newUser = this.repository.merge(user, body);
-    return await this.repository.save(newUser);
+    const newUser = await this.repository.save(this.repository.merge(user, body));
+    return {
+      id: newUser.id,
+      name: newUser.name,
+    };
   }
 }
