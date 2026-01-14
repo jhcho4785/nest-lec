@@ -36,6 +36,27 @@ export class CreateUserDto extends UserDto {
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {}
 
+export class UploadProfileDto {
+  @ApiProperty({
+    description: '프로필사진',
+    type: 'string',
+    format: 'binary',
+  })
+  file: Express.Multer.File;
+}
+
+export class UploadProfilesDto {
+  @ApiProperty({
+    description: '프로필사진',
+    type: 'array',
+    items: {
+      type: 'string',
+      format: 'binary',
+    },
+  })
+  files: Express.Multer.File[];
+}
+
 //dto에서 데코레이터 형태로 제어 -> 비즈니스 로직을 간결하게 만들어줌
 
 //validator

@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { UserRepository } from '@/user/user.repository';
 import { Like } from 'typeorm';
 import { CreateUserDto, UpdateUserDto, UserDto, UserQueryDto } from '@/dto/user.dto';
+import path from 'node:path';
 
 @Injectable()
 export class UserService {
@@ -31,5 +32,21 @@ export class UserService {
       id: newUser.id,
       name: newUser.name,
     };
+  }
+
+  async uploadProfile(id: string, file: Express.Multer.File) {
+    if (['.jpg', '.png'].includes(path.extname(file.originalname))) {
+      throw new BadRequestException('이미지 파일만 허용됩니다.');
+    }
+
+    const user = await this.repository.findOneBy({ id });
+    if (!user) {
+      throw new NotFoundException('User Not Found');
+    }
+
+    // user.profile = file.originalname;
+    // await this.repository.save(user);
+
+    // await this.s3Service.uploadFile(file);
   }
 }

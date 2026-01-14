@@ -1,7 +1,9 @@
-import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { UserService } from '@/user/user.service';
-import { CreateUserDto, UpdateUserDto, UserDto, UserQueryDto } from '@/dto/user.dto';
-import { ApiBadRequestResponse, ApiCreatedResponse, ApiNotFoundResponse } from '@nestjs/swagger';
+import { CreateUserDto, UpdateUserDto, UploadProfileDto, UserDto, UserQueryDto } from '@/dto/user.dto';
+import { ApiBadRequestResponse, ApiBody, ApiConsumes, ApiCreatedResponse, ApiNotFoundResponse } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 
 @Controller('user')
 export class UserController {
@@ -39,5 +41,22 @@ export class UserController {
   @Patch(':id')
   updateUser(@Param('id') id: string, @Body() body: UpdateUserDto): Promise<UserDto> {
     return this.service.updateUser(id, body);
+  }
+
+  /**
+   * 프로필사진 업로드
+   */
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: memoryStorage(),
+    }),
+  )
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    type: () => UploadProfileDto,
+  })
+  @Post(':id/profile')
+  uploadProfile(@Param('id') id: string, @UploadedFile() file: Express.Multer.File) {
+    return this.service.uploadProfile(id, file);
   }
 }
